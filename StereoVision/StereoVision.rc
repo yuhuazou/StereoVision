@@ -1,0 +1,372 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(简体，中国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\StereoVision.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\StereoVision.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ROBOTVISION_DIALOG DIALOGEX 0, 0, 696, 398
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "StereoVision"
+FONT 8, "Microsoft Sans Serif", 400, 0, 0x0
+BEGIN
+    PUSHBUTTON      "退出",IDCANCEL,639,377,50,14
+    CONTROL         "",IDC_PicRiCam,"Static",SS_BLACKFRAME,246,19,227,159
+    CONTROL         "",IDC_PicSynImg,"Static",SS_BLACKFRAME,10,202,227,159
+    CTEXT           "左视图",IDC_STATIC,14,8,225,9
+    CTEXT           "右视图",IDC_STATIC,247,8,226,9
+    CTEXT           "视差图",IDC_STATIC,11,191,226,8
+    GROUPBOX        "选择摄像头",IDC_STATIC,252,190,222,57
+    COMBOBOX        IDC_CBN1CamList,311,215,94,50,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "左",IDC_RAD1LfCam,"Button",BS_AUTORADIOBUTTON,314,203,43,10
+    CONTROL         "右",IDC_RAD2RiCam,"Button",BS_AUTORADIOBUTTON,360,203,45,10
+    PUSHBUTTON      "启动摄像头",IDC_BN1RunCam,417,201,48,12,WS_DISABLED
+    PUSHBUTTON      "关闭摄像头",IDC_BN2StopCam,417,217,48,12,WS_DISABLED
+    GROUPBOX        "帧处理",IDC_STATIC,252,251,221,61
+    CONTROL         "",IDC_PicLfCam,"Static",SS_BLACKFRAME,10,19,227,159
+    LTEXT           "选择视角：",IDC_STATIC,259,203,54,8
+    LTEXT           "选择摄像头：",IDC_STATIC,259,219,49,9
+    LTEXT           "选择方法：",IDC_STATIC,259,262,55,13
+    COMBOBOX        IDC_CBN2MethodList,311,259,95,56,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "目标信息",IDC_STATIC,251,315,221,46
+    LTEXT           "目标宽度",IDC_STATIC,260,330,56,10
+    LTEXT           "目标高度",IDC_STATIC,365,330,56,10
+    EDITTEXT        IDC_e5LfObjSpan,299,328,39,12,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    EDITTEXT        IDC_e6ObjPRLX,404,328,39,12,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    LTEXT           "目标距离",IDC_STATIC,260,344,56,10
+    LTEXT           "目标视差",IDC_STATIC,365,344,56,10
+    EDITTEXT        IDC_e7ObjDist,299,342,39,12,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    EDITTEXT        IDC_e8ObjSize,404,342,39,12,ES_AUTOHSCROLL | ES_NUMBER,WS_EX_RIGHT
+    GROUPBOX        "摄像机定标",IDC_STATIC,484,9,205,174
+    LTEXT           "棋盘角点数：",IDC_STATIC,490,21,53,10
+    EDITTEXT        IDC_BoardWidth,547,19,23,12,ES_AUTOHSCROLL
+    LTEXT           "nx",IDC_STATIC,574,21,13,11
+    EDITTEXT        IDC_BoardHeight,589,19,23,12,ES_AUTOHSCROLL
+    LTEXT           "ny",IDC_STATIC,616,21,16,8
+    LTEXT           "棋盘方块大小：",IDC_STATIC,490,37,60,11
+    EDITTEXT        IDC_SquareSize,547,36,23,12,ES_AUTOHSCROLL
+    LTEXT           "mm",IDC_STATIC,574,37,19,10
+    LTEXT           "棋盘检测次数：",IDC_STATIC,598,37,58,11
+    EDITTEXT        IDC_nBoards,658,36,23,12,ES_AUTOHSCROLL
+    LTEXT           "棋盘图像来源：",IDC_STATIC,490,54,58,10
+    CONTROL         "从摄像机",IDC_RAD_CalibFromCam,"Button",BS_AUTORADIOBUTTON,559,54,48,10
+    CONTROL         "从本地图片",IDC_RAD_CalibFromImg,"Button",BS_AUTORADIOBUTTON,616,54,56,10
+    GROUPBOX        "标志位选择",IDC_STATIC,490,85,192,40
+    LTEXT           "单目：",IDC_STATIC,495,97,30,9
+    LTEXT           "双目：",IDC_STATIC,496,111,25,8
+    CONTROL         "FPP",IDC_CHK1FPP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,521,97,29,10
+    CONTROL         "UIG",IDC_CHK2UIG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,552,97,29,10
+    CONTROL         "FAR",IDC_CHK3FAR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,583,97,30,10
+    CONTROL         "ZTD",IDC_CHK4ZTD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,614,97,31,10
+    CONTROL         "FPP",IDC_CHK1FPP2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,521,110,29,10
+    CONTROL         "UIG",IDC_CHK2UIG2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,552,110,29,10
+    CONTROL         "FAR",IDC_CHK3FAR2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,583,110,30,10
+    CONTROL         "SFL",IDC_CHK4SFL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,614,110,29,10
+    CONTROL         "FI",IDC_CHK5FI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,645,110,22,10
+    PUSHBUTTON      "执行摄像机定标",IDC_BN2StereoCalib,494,132,70,12,WS_DISABLED
+    GROUPBOX        "双目匹配",IDC_STATIC,482,190,207,171
+    LTEXT           "双目匹配算法：",IDC_STATIC,493,204,59,11
+    CONTROL         "BM",IDC_RAD_BM,"Button",BS_AUTORADIOBUTTON,574,203,27,10
+    CONTROL         "SGBM",IDC_RAD_SGBM,"Button",BS_AUTORADIOBUTTON,615,203,37,10
+    GROUPBOX        "",IDC_STATIC,553,197,123,17
+    GROUPBOX        "",IDC_STATIC,551,48,124,18
+    GROUPBOX        "参数设置",IDC_STATIC,490,216,192,99
+    LTEXT           "minDisp",IDC_STATIC,497,229,46,11
+    LTEXT           "maxDisp",IDC_STATIC,497,243,46,11
+    LTEXT           "SADWinSiz",IDC_STATIC,497,257,46,11
+    LTEXT           "textThres",IDC_STATIC,497,271,46,11
+    LTEXT           "disp12MaxDiff",IDC_STATIC,497,285,46,11
+    LTEXT           "preFiltCap",IDC_STATIC,593,229,46,11
+    LTEXT           "uniqRatio",IDC_STATIC,593,243,46,11
+    LTEXT           "speckRange",IDC_STATIC,593,257,46,11
+    LTEXT           "speckWinSiz",IDC_STATIC,593,271,46,11
+    CONTROL         "fullDP   ",IDC_CHK_fullDP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,590,285,39,10,WS_EX_RIGHT
+    EDITTEXT        IDC_EDIT_minDisp,549,228,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_minDisp,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,581,228,12,10
+    EDITTEXT        IDC_EDIT_maxDisp,549,242,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_maxDisp,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,581,242,12,10
+    EDITTEXT        IDC_EDIT_SADWinSiz,549,256,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_SADWinSiz,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,581,256,12,10
+    EDITTEXT        IDC_EDIT_textThres,549,270,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_textThres,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,581,270,11,10
+    EDITTEXT        IDC_EDIT_disp12MaxDiff,549,284,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_disp12MaxDiff,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,581,284,11,10
+    EDITTEXT        IDC_EDIT_preFiltCap,641,228,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_preFiltCap,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,673,228,12,10
+    EDITTEXT        IDC_EDIT_uniqRatio,641,242,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_uniqRatio,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,673,242,12,10
+    EDITTEXT        IDC_EDIT_speckRange,641,256,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_speckRange,"msctls_updown32",UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,673,256,12,10
+    EDITTEXT        IDC_EDIT_speckWinSiz,641,270,29,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_SPIN_speckWinSiz,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,673,270,11,10
+    PUSHBUTTON      "默认参数",IDC_BN_StereoDefParam,501,299,50,12
+    PUSHBUTTON      "计算视差",IDC_BN_CompDisp,490,318,58,12,WS_DISABLED
+    GROUPBOX        "",IDC_STATIC,551,66,123,17
+    CONTROL         "BOUGUET",IDC_RAD_BOUGUET,"Button",BS_AUTORADIOBUTTON,559,72,51,10
+    CONTROL         "HARTLEY",IDC_RAD_HARTLEY,"Button",BS_AUTORADIOBUTTON,616,72,49,10
+    CONTROL         "生成点云",IDC_CHK_ProjTo3D,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,626,335,48,10
+    CONTROL         "保存画面",IDC_CHK_SaveAsVideo,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,626,348,48,10
+    PUSHBUTTON      "默认设置",IDC_BN_DefaultCamCalibParam,632,18,52,12
+    GROUPBOX        "",IDC_STATIC,579,139,102,41
+    CONTROL         "读入单目定标结果",IDC_RAD_Load1CamCalibResult,"Button",BS_AUTORADIOBUTTON | WS_GROUP,592,145,80,10
+    CONTROL         "首先执行单目定标",IDC_RAD_Calib1CamFirst,"Button",BS_AUTORADIOBUTTON,592,156,80,10
+    CONTROL         "直接执行双目定标",IDC_RAD_StereoCalib,"Button",BS_AUTORADIOBUTTON,592,167,80,10
+    GROUPBOX        "",IDC_STATIC,563,315,118,44,WS_GROUP
+    CONTROL         "从摄像机",IDC_RAD_DispFromCam,"Button",BS_AUTORADIOBUTTON,569,321,48,10
+    CONTROL         "从本地图片",IDC_RAD_DispFromImg,"Button",BS_AUTORADIOBUTTON,626,321,53,10
+    CONTROL         "双目校正",IDC_CHK_StereoRectify,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,569,335,48,10
+    PUSHBUTTON      "停止计算",IDC_BN_StopDispComp,490,345,58,12,WS_DISABLED
+    LTEXT           "双目校正算法：",IDC_STATIC,490,71,60,11
+    CONTROL         "延时处理",IDC_CHK_DelayProc,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,492,334,48,10
+    EDITTEXT        IDC_EDIT_DelayTime,538,334,11,10,ES_AUTOHSCROLL
+    LTEXT           "秒",IDC_STATIC,552,335,8,8
+    LTEXT           "厘米",IDC_STATIC,341,331,17,8
+    LTEXT           "厘米",IDC_STATIC,341,344,17,8
+    LTEXT           "厘米",IDC_STATIC,446,331,17,8
+    LTEXT           "像素",IDC_STATIC,446,344,17,8
+    CONTROL         "彩色视差",IDC_CHK_ShowFullDisp,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,569,348,48,10
+    GROUPBOX        "色彩空间变换",IDC_STATIC,267,275,192,31
+    CONTROL         "RGB2HSV",IDC_RAD_ToHSV,"Button",BS_AUTORADIOBUTTON,278,285,50,10
+    CONTROL         "RGB2HLS",IDC_RAD_ToHLS,"Button",BS_AUTORADIOBUTTON,338,285,49,10
+    CONTROL         "RGB2YCrCb",IDC_RAD_ToYCrCb,"Button",BS_AUTORADIOBUTTON,398,285,55,10
+    CONTROL         "RGB3Lab",IDC_RAD_ToLab,"Button",BS_AUTORADIOBUTTON,278,295,47,10
+    CONTROL         "RGB2Luv",IDC_RAD_ToLuv,"Button",BS_AUTORADIOBUTTON,338,295,47,10
+    CONTROL         "RGB2XYZ",IDC_RAD_ToXYZ,"Button",BS_AUTORADIOBUTTON,398,295,49,10
+    CONTROL         "读入角点坐标数据",IDC_CHK_ReadCornerData,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,591,130,80,10
+    LTEXT           "(c) Zou Yuhua - BUAA",IDC_STATIC,487,368,86,9
+    LTEXT           "May 21,2010 - Last updated October 29,2012",IDC_STATIC,487,380,149,9
+    GROUPBOX        "",IDC_STATIC,481,362,155,29
+    COMBOBOX        IDC_CBN_Resolution,311,230,94,50,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "选择分辨率：",IDC_STATIC,259,235,49,9
+    PUSHBUTTON      "退出摄像机定标",IDC_BN_ExitCameraCalib,493,150,70,12,WS_DISABLED
+    CONTROL         "显示摄像机定标效果",IDC_CHK_ShowCalibResult,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,489,167,88,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ROBOTVISION_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 689
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 391
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_ROBOTVISION_DIALOG DLGINIT
+BEGIN
+    IDC_CBN_Resolution, 0x403, 10, 0
+0x3436, 0x2030, 0x202a, 0x3834, 0x0030, 
+    IDC_CBN_Resolution, 0x403, 10, 0
+0x3533, 0x2032, 0x202a, 0x3832, 0x0038, 
+    IDC_CBN_Resolution, 0x403, 10, 0
+0x3233, 0x2030, 0x202a, 0x3432, 0x0030, 
+    0
+END
+
+#endif    // 中文(简体，中国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// 英语(美国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About StereoVision"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "StereoVision, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2009",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "ZYH_BUAA"
+            VALUE "FileDescription", "StereoVision"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "StereoVision.exe"
+            VALUE "LegalCopyright", "ZYH: (c) <BUAA>.  All rights reserved."
+            VALUE "OriginalFilename", "StereoVision.exe"
+            VALUE "ProductName", "StereoVision"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About StereoVision..."
+END
+
+#endif    // 英语(美国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\StereoVision.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
