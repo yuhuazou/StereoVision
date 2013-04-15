@@ -233,15 +233,15 @@ BOOL CStereoVisionDlg::OnInitDialog()
 
 	// 在组合框CamList中添加摄像头名称的字符串
 	char camera_name[1024];
-	char istr[25];
+	char istr[1024];
 	CString camstr;
 	for(int i=0; i < m_nCamCount; i++)
 	{  
 		int retval = CCameraDS::CameraName(i, camera_name, sizeof(camera_name) );
 
-		sprintf_s(istr, " # %d", i);
-		strcat_s( camera_name, istr );  
-		camstr = camera_name;
+		sprintf_s(istr, "#%d ", i);
+		strcat_s( istr, camera_name );  
+		camstr = istr;
 		if(retval >0)
 			m_CBNCamList.AddString(camstr);
 		else
@@ -961,6 +961,7 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 								imgname = imgName.GetBuffer(0);
 								imwrite(imgname, frame1);
 							}
+                            imgName.ReleaseBuffer();
 						}
 
 						nFoundBoard++; 
@@ -1005,7 +1006,9 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 		// 是否读入已标定好的摄像头内参？
 		if (optCalib.calibOrder == CALIB_LOAD_CAMERA_PARAMS)
 		{		
-			if (0 == m_stereoCalibrator.loadCameraParams("leftCamera.yml", stereoParams.cameraParams1))
+            CStringA filePath(m_workDir);
+            filePath.AppendFormat("leftCamera.yml");
+			if (0 == m_stereoCalibrator.loadCameraParams(filePath.GetBuffer(0), stereoParams.cameraParams1))
 			{
 				LPCTSTR errMsg = _T("读入摄像头内参失败，找不到 leftCamera.yml 文件!");
 				throw errMsg;
@@ -1013,12 +1016,15 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 			
 			if (optCalib.doStereoCalib) 
 			{
-				if (0 == m_stereoCalibrator.loadCameraParams("rightCamera.yml", stereoParams.cameraParams2))
+                filePath = m_workDir;
+                filePath.AppendFormat("rightCamera.yml");
+				if (0 == m_stereoCalibrator.loadCameraParams(filePath.GetBuffer(0), stereoParams.cameraParams2))
 				{
 					LPCTSTR errMsg = _T("读入摄像头内参失败，找不到 rightCamera.yml 文件!");
 					throw errMsg;
 				}
 			}
+            filePath.ReleaseBuffer();
 
 			// 显示已读入已标定好的摄像头内参
 			AfxMessageBox(_T("已读入标定好的摄像头内参"));
@@ -1047,9 +1053,11 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 
 			AfxMessageBox(_T("已完成双目校正"));
 
-			// 保存摄像头定标参数	
-			m_stereoCalibrator.saveCalibrationDatas("calib_paras.xml"/*待改为由本地设置文件确定*/, optCalib.rectifyMethod, cornerDatas, stereoParams, remapMatrixs);
-
+            // 保存摄像头定标参数	
+            CStringA filePath(m_workDir);
+            filePath.AppendFormat("calib_paras.xml");
+			m_stereoCalibrator.saveCalibrationDatas(filePath.GetBuffer(0), optCalib.rectifyMethod, cornerDatas, stereoParams, remapMatrixs);
+            filePath.ReleaseBuffer();
 			AfxMessageBox(_T("已保存定标参数"));
 
 		} 
@@ -1059,8 +1067,10 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 			cameraParams.flags = optCalib.flagCameraCalib;
 
 			// 执行单目定标
-			m_stereoCalibrator.calibrateSingleCamera(cornerDatas, cameraParams);
-			m_stereoCalibrator.saveCameraParams(cameraParams);
+            m_stereoCalibrator.calibrateSingleCamera(cornerDatas, cameraParams);
+            CStringA filePath(m_workDir);
+            filePath.AppendFormat("cameraParams.yml");
+			m_stereoCalibrator.saveCameraParams(cameraParams, filePath.GetBuffer(0));
 
 			// 计算标定误差
 			double avgErr = 0;
@@ -1512,13 +1522,15 @@ void CStereoVisionDlg::OnBnClk_DoCompDisp()
 
 			if( optMatch.delayEachFrame )
 				Sleep(m_nDelayTime * 1000);
-
 		}
 
 		// 保存最后一帧景深图像的点云数据
 		if ( optMatch.generatePointCloud )
 		{
-			m_stereoMatcher.savePointClouds(pointCloud, "points.txt");
+            CStringA filePath(m_workDir);
+            filePath.AppendFormat("PointsClouds.txt");
+			m_stereoMatcher.savePointClouds(pointCloud, filePath.GetBuffer(0));
+            filePath.ReleaseBuffer();
 		}
 
 		// 对图像数据清零
@@ -1974,21 +1986,21 @@ void CStereoVisionDlg::F_Saveframe(Mat& lfImg, Mat&riImg, Mat& lfDisp)
 	// TODO: Add your control notification handler code here
 	static int nSavedFrames = 0;
 
-	char lfImgName[128], riImgName[128], lfDispName[128], xmlName[128];
-	sprintf_s(lfImgName, "%s\\Imgs\\SaveFrame\\left_%02d.png", m_workDir, nSavedFrames);
-	sprintf_s(riImgName, "%s\\Imgs\\SaveFrame\\right_%02d.png", m_workDir, nSavedFrames);
-	sprintf_s(lfDispName, "%s\\Imgs\\SaveFrame\\disp_%02d.png", m_workDir, nSavedFrames);
-	sprintf_s(xmlName, "%s\\Imgs\\SaveFrame\\disp_%02d.txt", m_workDir, nSavedFrames);
+	CStringA lfImgName(m_workDir), riImgName(m_workDir), lfDispName(m_workDir), xmlName(m_workDir);
+	lfImgName.AppendFormat("Imgs\\SaveFrame\\left_%02d.png", nSavedFrames);
+	riImgName.AppendFormat("Imgs\\SaveFrame\\right_%02d.png", nSavedFrames);
+	lfDispName.AppendFormat("Imgs\\SaveFrame\\disp_%02d.png", nSavedFrames);
+	xmlName.AppendFormat("Imgs\\SaveFrame\\disp_%02d.txt", nSavedFrames);
 	nSavedFrames++;
 
     try
     {
-        imwrite( lfImgName, lfImg);
-        imwrite( riImgName, riImg);
-        imwrite( lfDispName, lfDisp);
+        imwrite( lfImgName.GetBuffer(0), lfImg);
+        imwrite( riImgName.GetBuffer(0), riImg);
+        imwrite( lfDispName.GetBuffer(0), lfDisp);
 
         FILE* fp;
-        fopen_s(&fp, xmlName, "wt");
+        fopen_s(&fp, xmlName.GetBuffer(0), "wt");
         fprintf(fp, "%d\n", lfDisp.rows);
         fprintf(fp, "%d\n", lfDisp.cols);
         for(int y = 0; y < lfDisp.rows; y++)
@@ -2005,6 +2017,11 @@ void CStereoVisionDlg::F_Saveframe(Mat& lfImg, Mat&riImg, Mat& lfDisp)
     catch (...)
     {
     }
+
+    lfDispName.ReleaseBuffer();
+    lfImgName.ReleaseBuffer();
+    riImgName.ReleaseBuffer();
+    xmlName.ReleaseBuffer();
 }
 
 
