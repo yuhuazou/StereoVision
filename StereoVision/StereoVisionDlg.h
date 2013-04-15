@@ -74,7 +74,6 @@ private:
 		bool			useStereoRectify;	//是否使用双目校正算法
 		bool			saveResults;		//是否保存每帧图像匹配结果到本地文件
 		bool			delayEachFrame;		//是否延时显示匹配效果
-		bool			showColorDisparity;	//是否显示彩色视差图
 		STEREO_METHOD	stereoMethod;		//选择的立体匹配算法
 		StereoCalib::RECTIFYMETHOD	rectifyMethod;		//选择的双目校正算法
 	};
@@ -91,6 +90,7 @@ private:
 		double			squareSize;			//棋盘方块大小
 		cv::Size		cornerSize;			//棋盘角点数
 		CALIB_ORDER		calibOrder;			//摄像机定标次序
+        double          alpha;              //双目校正缩放系数
 		StereoCalib::RECTIFYMETHOD	rectifyMethod;		//选择的双目校正算法
 	};
 	
@@ -129,6 +129,9 @@ private:
 	int m_nUniqRatio;
 	int m_nSpeckRange;
 	int m_nSpeckWinSiz;
+    int m_nViewWidth;
+    int m_nViewHeight;
+    int m_nViewDepth;
 	UINT m_nID_RAD;
 	BOOL m_bFullDP;
 	BOOL m_bSaveFrame;
@@ -136,12 +139,15 @@ private:
 	double m_ObjectWidth;
 	double m_ObjectHeight;
 	double m_ObjectDistance;
-	double m_ObjectDisparity;
+    double m_ObjectDisparity;
+    double m_dAlpha;
 
-	CButton* m_pCheck;
-	CComboBox m_CBNCamList;
+    CButton* m_pCheck;
+    CComboBox m_CBNCamList_L;
+	CComboBox m_CBNCamList_R;
 	CComboBox m_CBNMethodList;
-	CComboBox m_CBNResolution;
+    CComboBox m_CBNResolution;
+    CComboBox m_CBNSwitchDispView;
 	CSpinButtonCtrl m_spinMinDisp;
 	CSpinButtonCtrl m_spinMaxDisp;
 	CSpinButtonCtrl m_spinSADWinSiz;
@@ -150,7 +156,10 @@ private:
 	CSpinButtonCtrl m_spinPreFiltCap;
 	CSpinButtonCtrl m_spinUniqRatio;
 	CSpinButtonCtrl m_spinSpeckRange;
-	CSpinButtonCtrl m_spinSpeckWinSiz;
+    CSpinButtonCtrl m_spinSpeckWinSiz;
+    CSpinButtonCtrl m_spinViewWidth;
+    CSpinButtonCtrl m_spinViewHeight;
+    CSpinButtonCtrl m_spinViewDepth;
 #pragma endregion 控件关联变量
 
 	/***
@@ -159,8 +168,8 @@ private:
 	void DoShowOrigFrame(void);
 	void DoStereoCalib(void);
 	void DoFrameProc(Mat& src, Mat& dst);
-	void DoParseOptionsOfCameraCalib(OptionCameraCalib& opt);
-	void DoParseOptionsOfStereoMatch(OptionStereoMatch& opt);
+	bool DoParseOptionsOfCameraCalib(OptionCameraCalib& opt);
+	bool DoParseOptionsOfStereoMatch(OptionStereoMatch& opt);
 	void DoClearParamsOfStereoMatch(void);
 	vector<CStringA> DoSelectFiles(LPCTSTR	lpszDefExt, DWORD	dwFlags, LPCTSTR	lpszFilter, LPCWSTR	lpstrTitle, LPCWSTR	lpstrInitialDir);
 	void DoUpdateStateBM(void);
@@ -176,23 +185,28 @@ private:
 	
 	/***
 	 *	界面控件消息响应函数
-	 */
-	afx_msg void OnCbnSelchgCbn1Camlist();
+     */
+    afx_msg void OnCbnSelchgCbn1CamlistL();
+	afx_msg void OnCbnSelchgCbn1CamlistR();
 	afx_msg void OnBnClkRunCam();
 	afx_msg void OnBnClkStopCam();
 	afx_msg void OnCbnSelchgCbn2Methodlist();
-	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClkDefaultCamCalibParam();
 	afx_msg void OnBnClkDefaultStereoParam();
 	afx_msg void OnBnClkRad_BM();
 	afx_msg void OnBnClkRad_SGBM();
 	afx_msg void OnDeltaposSpin_MaxDisp(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpin_SADWinSiz(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnDeltaposSpin_SpeckRange(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnDeltaposSpin_SpeckRange(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnDeltaposSpin_ViewWidth(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnDeltaposSpin_ViewHeight(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnDeltaposSpin_ViewDepth(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnBnClk_DoCompDisp();
 	afx_msg void OnBnClk_StopDispComp();
 	afx_msg void OnBnClk_DoCameraCalib();
-	afx_msg void OnBnClk_ExitCameraCalib();
+    afx_msg void OnBnClk_ExitCameraCalib();
+    afx_msg void OnBnClkDefaultViewfield();
 	afx_msg void OnCbnSelchangeCbnResolution();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+    afx_msg void OnClose();
 };

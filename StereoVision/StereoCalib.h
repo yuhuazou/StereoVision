@@ -67,6 +67,7 @@ public:
 		cv::Mat			essential;		// 本质矩阵
 		cv::Mat			foundational;	// 基础矩阵
 		int				flags;			// 双目标定所用的标志位
+        double          alpha;          // 双目校正效果的缩放系数，取值 0~1 或 -1
 	};
 
 	/***
@@ -87,6 +88,8 @@ public:
 	 *	双目校正方法
 	 */
 	enum RECTIFYMETHOD { RECTIFY_BOUGUET, RECTIFY_HARTLEY };
+
+    void setWorkDir(const char* workDir) { m_workDir = workDir; }
 
 	/*----------------------------
 	 * 功能 : 初始化棋盘角点数据信息
@@ -286,8 +289,6 @@ public:
 	 */
 	int remapImage(cv::Mat& img1, cv::Mat& img2, cv::Mat& img1r, cv::Mat& img2r, RemapMatrixs& remapMatrixs);
 
-private:
-
 	/*----------------------------
 	 * 功能 : 在图像右下角显示指定文字信息
 	 *----------------------------
@@ -299,6 +300,10 @@ private:
 	 * 参数 : text	[in]	文字信息
 	 */
 	void showText(cv::Mat& img, string text);
+
+private:
+
+    string m_workDir; // 工作目录
 
 };
 

@@ -31,6 +31,7 @@ public:
 	struct ObjectInfo
 	{
 		cv::Point		center;		//中心
+        cv::Point       nearest;    //最近点
 		double			distance;	//距离
 		double			area;		//面积
 		cv::Rect		boundRect;	//外接矩形
@@ -39,7 +40,8 @@ public:
 		// 定义赋值操作
 		void operator = (const ObjectInfo& rhs) 
 		{
-			center = rhs.center;
+            center = rhs.center;
+            nearest = rhs.nearest;
 			distance = rhs.distance;
 			area = rhs.area;
 			boundRect = rhs.boundRect;

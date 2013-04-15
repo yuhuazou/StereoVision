@@ -121,24 +121,26 @@ void PointCloudAnalyzer::parseCandidates(cv::Mat& objects, cv::Mat& depthMap, ve
 			mask = cv::Scalar(0);
 			drawContours(mask, contours, objID, cv::Scalar(255), -1);
 
+			// 计算轮廓矩形
+			object.boundRect = boundingRect( contour );
+			object.minRect = minAreaRect( contour );
+			object.center = object.minRect.center;
+
 			// 计算物体深度
 			if (useMeanDepth) //取平均深度
 			{
 				cv::Scalar meanVal = cv::mean(depthMap, mask);
 				object.distance = meanVal[0];
+                object.nearest = object.center;
 			} 
 			else	//取最近深度
 			{
 				double minVal = 0, maxVal = 0;
 				cv::Point minPos;
-				cv::minMaxLoc(depthMap, &minVal, &maxVal, &minPos, NULL, mask);
+                cv::minMaxLoc(depthMap, &minVal, &maxVal, &minPos, NULL, mask);
+                object.nearest = minPos;
 				object.distance = depthMap.at<float>(minPos.y, minPos.x);
 			}
-
-			// 计算轮廓矩形
-			object.boundRect = boundingRect( contour );
-			object.minRect = minAreaRect( contour );
-			object.center = object.minRect.center;
 
 			// 保存物体轮廓信息
 			objectInfos.push_back( object );

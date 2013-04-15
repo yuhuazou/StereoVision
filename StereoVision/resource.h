@@ -8,7 +8,9 @@
 #define IDD_ROBOTVISION_DIALOG          102
 #define IDR_MAINFRAME                   128
 #define IDC_CBN1CamList                 1000
+#define IDC_CBN1CamList_R               1000
 #define IDC_RAD1LfCam                   1001
+#define IDC_CBN1CamList_L               1001
 #define IDC_RAD2RiCam                   1002
 #define IDC_BN1RunCam                   1003
 #define IDC_BN2StopCam                  1004
@@ -47,7 +49,7 @@
 #define IDC_CHK4SFL                     1040
 #define IDC_CHK5FI                      1041
 #define IDC_BN2StereoCalib              1043
-#define IDC_BN_ExitCameraCalib        1044
+#define IDC_BN_ExitCameraCalib          1044
 #define IDC_CHK_ReadMatlabResult        1046
 #define IDC_RAD_BM                      1048
 #define IDC_RAD_SGBM                    1049
@@ -73,7 +75,10 @@
 #define IDC_SPIN_speckWinSiz            1069
 #define IDC_BN_StereoDefParam           1070
 #define IDC_BN_SaveStereoParam          1071
+#define IDC_EDIT_viewWidth              1071
 #define IDC_BN_CompDisp                 1072
+#define IDC_SPIN_viewWidth              1073
+#define IDC_EDIT_viewHeight             1074
 #define IDC_RAD_BOUGUET                 1075
 #define IDC_RAD_HARTLEY                 1076
 #define IDC_CHK_ProjTo3D                1077
@@ -86,10 +91,13 @@
 #define IDC_RAD_DispFromImg             1084
 #define IDC_CHK_StereoRectify           1085
 #define IDC_BN_LoadStereoParam          1086
+#define IDC_SPIN_viewHeight             1086
 #define IDC_BN_StopDispComp             1087
 #define IDC_BN_SaveFrame                1089
 #define IDC_CHK_DelayProc               1090
+#define IDC_EDIT_viewDepth              1091
 #define IDC_EDIT_DelayTime              1092
+#define IDC_SPIN_viewDepth              1093
 #define IDC_CHK_ShowFullDisp            1099
 #define IDC_RAD_ToHSV                   1100
 #define IDC_RAD_ToHLS                   1101
@@ -101,6 +109,14 @@
 #define IDC_CHK_ReadCornerData          1106
 #define IDC_CHK_ShowCalibResult_        1107
 #define IDC_CHK_ShowCalibResult         1107
+#define IDC_Edit_alpha_rectify          1108
+#define IDC_STATIC_DispView             1110
+#define IDC_RAD_ColorDisp               1111
+#define IDC_RAD_GrayDisp                1112
+#define IDC_RAD_TopDownView             1113
+#define IDC_BUTTON1                     1114
+#define IDC_BTN_DefaultViewField        1114
+#define IDC_RAD_SideView                1115
 
 // Next default values for new objects
 // 
@@ -108,7 +124,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1107
+#define _APS_NEXT_CONTROL_VALUE         1115
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -107,6 +107,50 @@ public:
 	 * 参数 : filename		[in]	文件路径
 	 */
 	void savePointClouds(cv::Mat& pointClouds, const char* filename);
+    
+	/*----------------------------
+	 * 功能 : 设置视场范围
+	 *----------------------------
+	 * 函数 : StereoMatch::setViewField
+	 * 访问 : public 
+	 * 返回 : void
+     *
+     * 参数 : viewWidth   [in]	视场宽度
+     * 参数 : viewHeight  [in]	视场高度
+     * 参数 : viewDepth   [in]	视场深度
+	 */
+    void setViewField(int viewWidth, int viewHeight, int viewDepth)
+    {
+        m_nViewWidth = viewWidth;
+        m_nViewHeight = viewHeight;
+        m_nViewDepth = viewDepth;
+    }
+
+	/*----------------------------
+	 * 功能 : 获取环境俯视图
+	 *----------------------------
+	 * 函数 : StereoMatch::savePointClouds
+	 * 访问 : public 
+	 * 返回 : void
+     *
+     * 参数 : pointClouds	[in]	三维点云数据
+     * 参数 : topDownView	[out]	环境俯视图
+     * 参数 : image       	[in]	环境图像
+	 */
+    void getTopDownView(cv::Mat& pointClouds, cv::Mat& topDownView, cv::Mat& image = cv::Mat());
+    
+	/*----------------------------
+	 * 功能 : 获取环境俯视图
+	 *----------------------------
+	 * 函数 : StereoMatch::savePointClouds
+	 * 访问 : public 
+	 * 返回 : void
+     *
+     * 参数 : pointClouds	[in]	三维点云数据
+     * 参数 : sideView    	[out]	环境侧视图
+     * 参数 : image       	[in]	环境图像
+	 */
+    void getSideView(cv::Mat& pointClouds, cv::Mat& sideView, cv::Mat& image = cv::Mat());
 
 	/***
 	 *	公开变量
@@ -148,6 +192,10 @@ private:
 	int m_frameWidth;					// 帧宽
 	int m_frameHeight;					// 帧高
 	int m_numberOfDisparies;			// 视差变化范围
+
+    int m_nViewWidth;                   // 视场宽度
+    int m_nViewHeight;                  // 视场高度
+    int m_nViewDepth;                   // 视场深度
 
 };
 

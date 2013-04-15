@@ -89,9 +89,7 @@ int StereoMatch::loadCalibData(const char* xmlFilePath)
 		cv::Mat lfCamMat;
 		fs["leftCameraMatrix"] >> lfCamMat;
 		m_FL = lfCamMat.at<double>(0,0);
-
-		m_Calib_Mat_Q.at<double>(3, 2) = -m_Calib_Mat_Q.at<double>(3, 2);
-
+        
 		m_Calib_Mat_Mask_Roi = cv::Mat::zeros(m_frameHeight, m_frameWidth, CV_8UC1);
 		cv::rectangle(m_Calib_Mat_Mask_Roi, m_Calib_Roi_L, cv::Scalar(255), -1);
 
@@ -291,22 +289,17 @@ int StereoMatch::getPointClouds(cv::Mat& disparity, cv::Mat& pointClouds)
 	//计算生成三维点云
 	cv::reprojectImageTo3D(disparity, pointClouds, m_Calib_Mat_Q, true);
 	
-	// 坐标数据校正
-	// 乘以 16 得到 毫米 单位坐标，乘以 1.6 得到 厘米 单位坐标
-	// 原理参见：http://blog.csdn.net/chenyusiyuan/article/details/5967291 
-	pointClouds *= 1.6; 	
-
-	// 校正 Y 方向数据，正负反转
-	// 原理参见：http://blog.csdn.net/chenyusiyuan/article/details/5970799 
-	for (int y = 0; y < pointClouds.rows; ++y)
-	{
-		for (int x = 0; x < pointClouds.cols; ++x)
-		{
-			cv::Point3f point = pointClouds.at<cv::Point3f>(y,x);
-			point.y = -point.y;
-			pointClouds.at<cv::Point3f>(y,x) = point;
-		}
-	}
+	//// 校正 Y 方向数据，正负反转
+	//// 原理参见：http://blog.csdn.net/chenyusiyuan/article/details/5970799 
+	//for (int y = 0; y < pointClouds.rows; ++y)
+	//{
+	//	for (int x = 0; x < pointClouds.cols; ++x)
+	//	{
+	//		cv::Point3f point = pointClouds.at<cv::Point3f>(y,x);
+ //           point.y = -point.y;
+	//		pointClouds.at<cv::Point3f>(y,x) = point;
+	//	}
+	//}
 
 	return 1;
 }
@@ -339,7 +332,7 @@ int StereoMatch::getDisparityImage(cv::Mat& disparity, cv::Mat& disparityImage, 
 	// 转换为伪彩色图像 或 灰度图像
 	if (isColor)
 	{
-		if (disparityImage.empty() || disparityImage.type() != CV_8UC3 )
+		if (disparityImage.empty() || disparityImage.type() != CV_8UC3 || disparityImage.size() != disparity.size())
 		{
 			disparityImage = cv::Mat::zeros(disparity.rows, disparity.cols, CV_8UC3);
 		}
@@ -370,6 +363,99 @@ int StereoMatch::getDisparityImage(cv::Mat& disparity, cv::Mat& disparityImage, 
 	}
 
 	return 1;
+}
+
+
+/*----------------------------
+ * 功能 : 获取环境俯视图
+ *----------------------------
+ * 函数 : StereoMatch::savePointClouds
+ * 访问 : public 
+ * 返回 : void
+ *
+ * 参数 : pointClouds	[in]	三维点云数据
+ * 参数 : topDownView	[out]	环境俯视图
+ * 参数 : image       	[in]	环境图像
+ */
+void StereoMatch::getTopDownView(cv::Mat& pointClouds, cv::Mat& topDownView, cv::Mat& image /*= cv::Mat()*/)
+{
+    int VIEW_WIDTH = m_nViewWidth, VIEW_DEPTH = m_nViewDepth;
+    cv::Size mapSize = cv::Size(VIEW_DEPTH, VIEW_WIDTH);
+
+    if (topDownView.empty() || topDownView.size() != mapSize || topDownView.type() != CV_8UC3)
+        topDownView = cv::Mat(mapSize, CV_8UC3);
+
+    topDownView = cv::Scalar::all(50);
+
+    if (pointClouds.empty())
+        return;
+
+    if (image.empty() || image.size() != pointClouds.size())
+        image = 255 * cv::Mat::ones(pointClouds.size(), CV_8UC3);
+    
+    for(int y = 0; y < pointClouds.rows; y++)
+    {
+        for(int x = 0; x < pointClouds.cols; x++)
+        {
+            cv::Point3f point = pointClouds.at<cv::Point3f>(y, x);
+            int pos_Z = point.z;
+
+            if ((0 <= pos_Z) && (pos_Z < VIEW_DEPTH))
+            {
+                int pos_X = point.x + VIEW_WIDTH/2;
+                if ((0 <= pos_X) && (pos_X < VIEW_WIDTH))
+                {
+                    topDownView.at<cv::Vec3b>(pos_X,pos_Z) = image.at<cv::Vec3b>(y,x);
+                }
+            }
+        }
+    }
+}
+    
+/*----------------------------
+ * 功能 : 获取环境俯视图
+ *----------------------------
+ * 函数 : StereoMatch::savePointClouds
+ * 访问 : public 
+ * 返回 : void
+ *
+ * 参数 : pointClouds	[in]	三维点云数据
+ * 参数 : sideView    	[out]	环境侧视图
+ * 参数 : image       	[in]	环境图像
+ */
+void StereoMatch::getSideView(cv::Mat& pointClouds, cv::Mat& sideView, cv::Mat& image /*= cv::Mat()*/)
+{
+    int VIEW_HEIGTH = m_nViewHeight, VIEW_DEPTH = m_nViewDepth;
+    cv::Size mapSize = cv::Size(VIEW_DEPTH, VIEW_HEIGTH);
+
+    if (sideView.empty() || sideView.size() != mapSize || sideView.type() != CV_8UC3)
+        sideView = cv::Mat(mapSize, CV_8UC3);
+    
+    sideView = cv::Scalar::all(50);
+
+    if (pointClouds.empty())
+        return;
+
+    if (image.empty() || image.size() != pointClouds.size())
+        image = 255 * cv::Mat::ones(pointClouds.size(), CV_8UC3);
+
+    for(int y = 0; y < pointClouds.rows; y++)
+    {
+        for(int x = 0; x < pointClouds.cols; x++)
+        {
+            cv::Point3f point = pointClouds.at<cv::Point3f>(y, x);
+            int pos_Y = point.y + VIEW_HEIGTH/2;
+            int pos_Z = point.z;
+
+            if ((0 <= pos_Z) && (pos_Z < VIEW_DEPTH))
+            {
+                if ((0 <= pos_Y) && (pos_Y < VIEW_HEIGTH))
+                {
+                    sideView.at<cv::Vec3b>(pos_Y,pos_Z) = image.at<cv::Vec3b>(y,x);
+                }
+            }
+        }
+    }
 }
 
 

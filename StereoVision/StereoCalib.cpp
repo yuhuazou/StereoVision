@@ -298,7 +298,7 @@ int StereoCalib::detectCorners(cv::Mat& img1, cv::Mat& img2, CornerDatas& corner
  */
 void StereoCalib::showText(cv::Mat& img, string text)
 {
-	int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+	int fontFace = cv::FONT_HERSHEY_PLAIN;
 	double fontScale = 1;
 	int fontThickness = 2;
 
@@ -315,16 +315,16 @@ void StereoCalib::showText(cv::Mat& img, string text)
 	// draw the box
 	rectangle(img, textOrg + cv::Point(0, textBaseline),
 		textOrg + cv::Point(textSize.width, -textSize.height),
-		cv::Scalar(0,0,255));
+		cv::Scalar(0,255,0));
 
 	// ... and the textBaseline first
 	line(img, textOrg + cv::Point(0, fontThickness),
 		textOrg + cv::Point(textSize.width, fontThickness),
-		cv::Scalar(0, 0, 255));
+		cv::Scalar(0,255,0));
 
 	// then put the text itself
 	putText(img, text, textOrg, fontFace, fontScale,
-		cv::Scalar::all(255), fontThickness, 8);
+		cv::Scalar(0,0,255), fontThickness, 8);
 }
 
 
@@ -398,7 +398,7 @@ int StereoCalib::saveCameraParams(const CameraParams& cameraParams, const char* 
 	std::string filename_ = filename;
 
 	//按当前时间生成文件名
-	if (filename_ == "" || filename_ == "cameraParams.yml")
+	if (filename_ == "")
 	{
 		int strLen = 20;
 		char *pCurrTime = (char*)malloc(sizeof(char)*strLen);
@@ -540,8 +540,8 @@ int StereoCalib::calibrateStereoCamera(CornerDatas& cornerDatas, StereoParams& s
 		/***
 		 *	保存单目定标结果至本地
 		 */
-		saveCameraParams(stereoParams.cameraParams1, "cameraParams_left.yml"/*待改为由本地设置文件确定*/);
-		saveCameraParams(stereoParams.cameraParams2, "cameraParams_right.yml"/*待改为由本地设置文件确定*/);
+		saveCameraParams(stereoParams.cameraParams1, (m_workDir + "cameraParams_left.yml").c_str());
+		saveCameraParams(stereoParams.cameraParams2, (m_workDir + "cameraParams_right.yml").c_str());
 	}
 
 	stereoParams.imageSize = cornerDatas.imageSize;
@@ -731,7 +731,8 @@ int StereoCalib::rectifyStereoCamera(CornerDatas& cornerDatas, StereoParams& ste
 
 	cv::Mat R1, R2, P1, P2, Q;
 	cv::Rect roi1, roi2;
-	double alpha = -1;
+    if (stereoParams.alpha < 0 || stereoParams.alpha > 1)
+        stereoParams.alpha = -1;
 
 	//执行双目校正
 	stereoRectify(
@@ -744,7 +745,7 @@ int StereoCalib::rectifyStereoCamera(CornerDatas& cornerDatas, StereoParams& ste
 		stereoParams.translation,
 		R1,R2, P1, P2, Q, 
 		CV_CALIB_ZERO_DISPARITY,
-		alpha, 
+		stereoParams.alpha, 
 		stereoParams.imageSize,
 		&roi1, &roi2);
 
