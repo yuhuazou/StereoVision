@@ -273,6 +273,8 @@ BOOL CStereoVisionDlg::OnInitDialog()
 			AfxMessageBox(_T("不能获取摄像头的名称"));
 	}
 	camstr.ReleaseBuffer();
+    if (m_nCamCount <= 1)
+        m_CBNCamList_R.EnableWindow(FALSE);
 
 	// 在组合框MethodList中添加各种帧处理方法的字符串
 	m_CBNMethodList.AddString(_T("显示原始画面"));
