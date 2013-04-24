@@ -288,18 +288,19 @@ int StereoMatch::getPointClouds(cv::Mat& disparity, cv::Mat& pointClouds)
 
 	//计算生成三维点云
 	cv::reprojectImageTo3D(disparity, pointClouds, m_Calib_Mat_Q, true);
+    pointClouds *= 1.6;
 	
-	//// 校正 Y 方向数据，正负反转
-	//// 原理参见：http://blog.csdn.net/chenyusiyuan/article/details/5970799 
-	//for (int y = 0; y < pointClouds.rows; ++y)
-	//{
-	//	for (int x = 0; x < pointClouds.cols; ++x)
-	//	{
-	//		cv::Point3f point = pointClouds.at<cv::Point3f>(y,x);
- //           point.y = -point.y;
-	//		pointClouds.at<cv::Point3f>(y,x) = point;
-	//	}
-	//}
+	// 校正 Y 方向数据，正负反转
+	// 原理参见：http://blog.csdn.net/chenyusiyuan/article/details/5970799 
+	for (int y = 0; y < pointClouds.rows; ++y)
+	{
+		for (int x = 0; x < pointClouds.cols; ++x)
+		{
+			cv::Point3f point = pointClouds.at<cv::Point3f>(y,x);
+            point.y = -point.y;
+			pointClouds.at<cv::Point3f>(y,x) = point;
+		}
+	}
 
 	return 1;
 }
@@ -444,7 +445,7 @@ void StereoMatch::getSideView(cv::Mat& pointClouds, cv::Mat& sideView, cv::Mat& 
         for(int x = 0; x < pointClouds.cols; x++)
         {
             cv::Point3f point = pointClouds.at<cv::Point3f>(y, x);
-            int pos_Y = point.y + VIEW_HEIGTH/2;
+            int pos_Y = -point.y + VIEW_HEIGTH/2;
             int pos_Z = point.z;
 
             if ((0 <= pos_Z) && (pos_Z < VIEW_DEPTH))
