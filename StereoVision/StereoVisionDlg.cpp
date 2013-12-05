@@ -913,12 +913,16 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 					_T("image files (*.bmp; *.png; *.jpg) |*.bmp; *.png; *.jpg; *.jpeg| All Files (*.*) |*.*||"),
 					_T("选择左视图文件"),
 					_T("Imgs\\Left"));
-				img1Files = DoSelectFiles(
-					_T("*.bmp"), 
-					OFN_ENABLESIZING   |OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY,
-					_T("image files (*.bmp; *.png; *.jpg) |*.bmp; *.png; *.jpg; *.jpeg| All Files (*.*) |*.*||"),
-					_T("选择右视图文件"),
-					_T("Imgs\\Right"));
+
+                if (optCalib.doStereoCalib)
+                {
+                    img1Files = DoSelectFiles(
+                        _T("*.bmp"), 
+                        OFN_ENABLESIZING   |OFN_EXPLORER | OFN_ALLOWMULTISELECT | OFN_HIDEREADONLY,
+                        _T("image files (*.bmp; *.png; *.jpg) |*.bmp; *.png; *.jpg; *.jpeg| All Files (*.*) |*.*||"),
+                        _T("选择右视图文件"),
+                        _T("Imgs\\Right"));
+                }
 
 				if( img0Files.empty() )	// 判断是否获得图片
 				{

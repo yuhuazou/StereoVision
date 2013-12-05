@@ -580,7 +580,7 @@ int StereoCalib::calibrateStereoCamera(CornerDatas& cornerDatas, StereoParams& s
  * 参数 : cameraParams	[in]	标定的摄像机参数
  * 参数 : err			[out]	单目标定误差
  */
-int StereoCalib::getCameraCalibrateError(vector<vector<cv::Point3f> >& _objectPoints, vector<vector<cv::Point2f> >& _imagePoints, CameraParams& cameraParams, double err)
+int StereoCalib::getCameraCalibrateError(vector<vector<cv::Point3f> >& _objectPoints, vector<vector<cv::Point2f> >& _imagePoints, CameraParams& cameraParams, double& err)
 {
 	cv::Mat imagePoints2;
 	int totalPoints = 0;
@@ -605,7 +605,8 @@ int StereoCalib::getCameraCalibrateError(vector<vector<cv::Point3f> >& _objectPo
 			imagePoints2);
 
 		// 计算重投影误差
-		double erri = norm(imagePoints, imagePoints2, CV_L2);
+        cv::Mat imagePoints1 = cv::Mat(imagePoints);
+		double erri = norm(imagePoints1, imagePoints2, CV_L2);
 		totalErr += erri * erri;
 	}
 

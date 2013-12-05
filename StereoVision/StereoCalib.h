@@ -218,7 +218,7 @@ public:
 	 * 参数 : cameraParams	[in]	标定的摄像机参数
 	 * 参数 : err			[out]	单目标定误差
 	 */
-	int getCameraCalibrateError(vector<vector<cv::Point3f> >& objectPoints, vector<vector<cv::Point2f> >& imagePoints, CameraParams& cameraParams, double err);
+	int getCameraCalibrateError(vector<vector<cv::Point3f> >& objectPoints, vector<vector<cv::Point2f> >& imagePoints, CameraParams& cameraParams, double& err);
 
 	/*----------------------------
 	 * 功能 : 计算双目标定误差
