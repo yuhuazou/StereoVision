@@ -270,6 +270,79 @@ int StereoMatch::sgbmMatch(cv::Mat& frameLeft, cv::Mat& frameRight, cv::Mat& dis
 
 
 /*----------------------------
+ * 功能 : 基于 VAR 算法计算视差
+ *----------------------------
+ * 函数 : StereoMatch::varMatch
+ * 访问 : public 
+ * 返回 : 0 - 失败，1 - 成功
+ *
+ * 参数 : frameLeft		[in]	左摄像机帧图
+ * 参数 : frameRight		[in]	右摄像机帧图
+ * 参数 : disparity		[out]	视差图
+ * 参数 : imageLeft		[out]	处理后的左视图，用于显示
+ * 参数 : imageRight		[out]	处理后的右视图，用于显示
+ */
+int StereoMatch::varMatch(cv::Mat& frameLeft, cv::Mat& frameRight, cv::Mat& disparity, cv::Mat& imageLeft, cv::Mat& imageRight)
+{
+	// 输入检查
+	if (frameLeft.empty() || frameRight.empty())
+	{
+		disparity = cv::Scalar(0);
+		return 0;
+	}
+	if (m_frameWidth == 0 || m_frameHeight == 0)
+	{
+		if (init(frameLeft.cols, frameLeft.rows, "calib_paras.xml"/*待改为由本地设置文件确定*/) == 0)	//执行类初始化
+		{
+			return 0;
+		}
+	}
+
+	// 复制图像
+	cv::Mat img1proc, img2proc;
+	frameLeft.copyTo(img1proc);
+	frameRight.copyTo(img2proc);
+
+	// 校正图像，使左右视图行对齐	
+	cv::Mat img1remap, img2remap;
+	if (m_Calib_Data_Loaded)
+	{
+		remap(img1proc, img1remap, m_Calib_Mat_Remap_X_L, m_Calib_Mat_Remap_Y_L, cv::INTER_LINEAR);		// 对用于视差计算的画面进行校正
+		remap(img2proc, img2remap, m_Calib_Mat_Remap_X_R, m_Calib_Mat_Remap_Y_R, cv::INTER_LINEAR);
+	} 
+	else
+	{
+		img1remap = img1proc;
+		img2remap = img2proc;
+	}
+
+	// 对左右视图的左边进行边界延拓，以获取与原始视图相同大小的有效视差区域
+	cv::Mat img1border, img2border;
+	if (m_numberOfDisparies != m_VAR.maxDisp)
+		m_numberOfDisparies = m_VAR.maxDisp;
+	copyMakeBorder(img1remap, img1border, 0, 0, m_VAR.maxDisp, 0, IPL_BORDER_REPLICATE);
+	copyMakeBorder(img2remap, img2border, 0, 0, m_VAR.maxDisp, 0, IPL_BORDER_REPLICATE);
+
+	// 计算视差
+	cv::Mat dispBorder;
+	m_VAR(img1border, img2border, dispBorder);
+
+	// 截取与原始画面对应的视差区域（舍去加宽的部分）
+	cv::Mat disp;
+	disp = dispBorder.colRange(m_VAR.maxDisp, img1border.cols);	
+	disp.copyTo(disparity, m_Calib_Mat_Mask_Roi);
+
+	// 输出处理后的图像
+	imageLeft = img1remap.clone();
+	imageRight = img2remap.clone();
+	rectangle(imageLeft, m_Calib_Roi_L, CV_RGB(0,255,0), 3);
+	rectangle(imageRight, m_Calib_Roi_R, CV_RGB(0,255,0), 3);
+
+	return 1;
+}
+
+
+/*----------------------------
  * 功能 : 计算三维点云
  *----------------------------
  * 函数 : StereoMatch::getPointClouds
@@ -323,7 +396,14 @@ int StereoMatch::getDisparityImage(cv::Mat& disparity, cv::Mat& disparityImage, 
 	cv::Mat disp8u;
 	if (disparity.depth() != CV_8U)
 	{
-		disparity.convertTo(disp8u, CV_8U, 255/(m_numberOfDisparies*16.));
+		if (disparity.depth() == CV_8S)
+		{
+			disparity.convertTo(disp8u, CV_8U);
+		} 
+		else
+		{
+			disparity.convertTo(disp8u, CV_8U, 255/(m_numberOfDisparies*16.));
+		}
 	} 
 	else
 	{

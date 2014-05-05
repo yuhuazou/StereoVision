@@ -10,7 +10,6 @@
 #include "StdAfx.h"
 #include "StereoCalib.h"
 
-
 StereoCalib::StereoCalib(void)
 {
 }
@@ -243,7 +242,7 @@ int StereoCalib::detectCorners(cv::Mat& img1, cv::Mat& img2, CornerDatas& corner
 	// 寻找棋盘及其角点
 	bool found1 = false;
 	bool found2 = true;
-	int flags = CV_CALIB_CB_ADAPTIVE_THRESH + CV_CALIB_CB_NORMALIZE_IMAGE + CV_CALIB_CB_FAST_CHECK;
+	int flags = cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE + cv::CALIB_CB_FAST_CHECK;
 
 	found1 = findChessboardCorners(img1, cornerDatas.boardSize, corners1, flags);
 	if (stereoMode) 
@@ -255,9 +254,9 @@ int StereoCalib::detectCorners(cv::Mat& img1, cv::Mat& img2, CornerDatas& corner
 	{
 		//转换为灰度图
 		cv::Mat gray1, gray2;
-		cvtColor(img1, gray1, CV_RGB2GRAY);
+		cvtColor(img1, gray1, cv::COLOR_RGB2GRAY);
 		if (stereoMode) 
-			cvtColor(img2, gray2, CV_RGB2GRAY);
+			cvtColor(img2, gray2, cv::COLOR_RGB2GRAY);
 
 		//计算角点的精确坐标
 		cv::Size regionSize(11, 11);
@@ -421,11 +420,11 @@ int StereoCalib::saveCameraParams(const CameraParams& cameraParams, const char* 
 
 		char flagText[1024];
 		sprintf_s( flagText, "flags: %s%s%s%s%s",
-			cameraParams.flags & CV_CALIB_FIX_K3 ? "fix_k3" : "",
-			cameraParams.flags & CV_CALIB_USE_INTRINSIC_GUESS ? " + use_intrinsic_guess" : "",
-			cameraParams.flags & CV_CALIB_FIX_ASPECT_RATIO ? " + fix_aspect_ratio" : "",
-			cameraParams.flags & CV_CALIB_FIX_PRINCIPAL_POINT ? " + fix_principal_point" : "",
-			cameraParams.flags & CV_CALIB_ZERO_TANGENT_DIST ? " + zero_tangent_dist" : "" );
+			cameraParams.flags & cv::CALIB_FIX_K3 ? "fix_k3" : "",
+			cameraParams.flags & cv::CALIB_USE_INTRINSIC_GUESS ? " + use_intrinsic_guess" : "",
+			cameraParams.flags & cv::CALIB_FIX_ASPECT_RATIO ? " + fix_aspect_ratio" : "",
+			cameraParams.flags & cv::CALIB_FIX_PRINCIPAL_POINT ? " + fix_principal_point" : "",
+			cameraParams.flags & cv::CALIB_ZERO_TANGENT_DIST ? " + zero_tangent_dist" : "" );
 		cvWriteComment(*fs, flagText, 0);
 		
 		fs << "flags"					<< cameraParams.flags;
@@ -546,7 +545,7 @@ int StereoCalib::calibrateStereoCamera(CornerDatas& cornerDatas, StereoParams& s
 
 	stereoParams.imageSize = cornerDatas.imageSize;
 
-	stereoCalibrate(
+	cv::stereoCalibrate(
 		cornerDatas.objectPoints,
 		cornerDatas.imagePoints1,
 		cornerDatas.imagePoints2,
@@ -561,7 +560,7 @@ int StereoCalib::calibrateStereoCamera(CornerDatas& cornerDatas, StereoParams& s
 		stereoParams.foundational,
 		cv::TermCriteria(cv::TermCriteria::COUNT+cv::TermCriteria::EPS, 30, 1e-6),
 		stereoParams.flags +
-		CV_CALIB_FIX_K3 + CV_CALIB_FIX_K4 + CV_CALIB_FIX_K5
+		cv::CALIB_FIX_K3 + cv::CALIB_FIX_K4 + cv::CALIB_FIX_K5
 		);
 
 	return 1;
@@ -606,7 +605,7 @@ int StereoCalib::getCameraCalibrateError(vector<vector<cv::Point3f> >& _objectPo
 
 		// 计算重投影误差
         cv::Mat imagePoints1 = cv::Mat(imagePoints);
-		double erri = norm(imagePoints1, imagePoints2, CV_L2);
+		double erri = norm(imagePoints1, imagePoints2, cv::NORM_L2);
 		totalErr += erri * erri;
 	}
 
@@ -745,7 +744,7 @@ int StereoCalib::rectifyStereoCamera(CornerDatas& cornerDatas, StereoParams& ste
 		stereoParams.rotation,
 		stereoParams.translation,
 		R1,R2, P1, P2, Q, 
-		CV_CALIB_ZERO_DISPARITY,
+		cv::CALIB_ZERO_DISPARITY,
 		stereoParams.alpha, 
 		stereoParams.imageSize,
 		&roi1, &roi2);
@@ -823,11 +822,11 @@ int StereoCalib::saveCalibrationDatas(const char* filename, RECTIFYMETHOD method
 
 		char flagText[1024];
 		sprintf_s( flagText, "flags: %s%s%s%s%s",
-			stereoParams.flags & CV_CALIB_USE_INTRINSIC_GUESS ? "+ use_intrinsic_guess" : "",
-			stereoParams.flags & CV_CALIB_FIX_ASPECT_RATIO ? " + fix_aspect_ratio" : "",
-			stereoParams.flags & CV_CALIB_FIX_PRINCIPAL_POINT ? " + fix_principal_point" : "",
-			stereoParams.flags & CV_CALIB_FIX_INTRINSIC ? " + fix_intrinsic" : "",
-			stereoParams.flags & CV_CALIB_SAME_FOCAL_LENGTH ? " + same_focal_length" : "" );
+			stereoParams.flags & cv::CALIB_USE_INTRINSIC_GUESS ? "+ use_intrinsic_guess" : "",
+			stereoParams.flags & cv::CALIB_FIX_ASPECT_RATIO ? " + fix_aspect_ratio" : "",
+			stereoParams.flags & cv::CALIB_FIX_PRINCIPAL_POINT ? " + fix_principal_point" : "",
+			stereoParams.flags & cv::CALIB_FIX_INTRINSIC ? " + fix_intrinsic" : "",
+			stereoParams.flags & cv::CALIB_SAME_FOCAL_LENGTH ? " + same_focal_length" : "" );
 
 		cvWriteComment(*fs, flagText, 0);
 

@@ -16,6 +16,7 @@
 #include "opencv2/imgproc/types_c.h"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/calib3d/calib3d.hpp"
+#include "opencv2/contrib/contrib.hpp"
 
 using namespace std;
 
@@ -71,6 +72,21 @@ public:
 	 * 参数 : imageRight		[out]	处理后的右视图，用于显示
 	 */
 	int sgbmMatch(cv::Mat& frameLeft, cv::Mat& frameRight, cv::Mat& disparity, cv::Mat& imageLeft, cv::Mat& imageRight);
+	
+	/*----------------------------
+	 * 功能 : 基于 VAR 算法计算视差
+	 *----------------------------
+	 * 函数 : StereoMatch::sgbmMatch
+	 * 访问 : public 
+	 * 返回 : 0 - 失败，1 - 成功
+	 *
+	 * 参数 : frameLeft		[in]	左摄像机帧图
+	 * 参数 : frameRight		[in]	右摄像机帧图
+	 * 参数 : disparity		[out]	视差图
+	 * 参数 : imageLeft		[out]	处理后的左视图，用于显示
+	 * 参数 : imageRight		[out]	处理后的右视图，用于显示
+	 */
+	int varMatch(cv::Mat& frameLeft, cv::Mat& frameRight, cv::Mat& disparity, cv::Mat& imageLeft, cv::Mat& imageRight);
 
 	/*----------------------------
 	 * 功能 : 计算三维点云
@@ -155,10 +171,11 @@ public:
 
 	/***
 	 *	公开变量
-	 */
-	cv::StereoBM	m_BM;				// 立体匹配 BM 方法
-	cv::StereoSGBM	m_SGBM;				// 立体匹配 SGBM 方法
-	double			m_FL;				// 左摄像机校正后的焦距值
+	 */	
+	cv::StereoBM		m_BM;				// 立体匹配 BM 方法
+	cv::StereoSGBM		m_SGBM;				// 立体匹配 SGBM 方法
+	cv::StereoVar		m_VAR;				// 立体匹配 VAR 方法
+	double				m_FL;				// 左摄像机校正后的焦距值
 
 private:
 

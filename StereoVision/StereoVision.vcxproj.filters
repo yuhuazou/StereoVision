@@ -15,13 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-    <None Include="res\StereoVision.rc2">
-      <Filter>资源文件</Filter>
-    </None>
-    <None Include="res\StereoVision.ico">
-      <Filter>资源文件</Filter>
-    </None>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StereoVision.h">
@@ -45,6 +39,9 @@
     <ClInclude Include="CvvImage.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ParamServer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="PointCloudAnalyzer.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -65,19 +62,22 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CameraDS.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="CvvImage.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="PointCloudAnalyzer.cpp">
+    <ClCompile Include="StereoMatch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="StereoCalib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="StereoMatch.cpp">
+    <ClCompile Include="PointCloudAnalyzer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ParamServer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CvvImage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraDS.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -85,5 +85,15 @@
     <ResourceCompile Include="StereoVision.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\StereoVision.rc2">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\StereoVision.ico">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

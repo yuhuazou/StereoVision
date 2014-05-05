@@ -7,10 +7,12 @@
 	功能 :	立体视觉测试程序界面头文件
 *********************************************************************/
 
+// StereoVisionDlg.h : 头文件
+//
+
 #pragma once
 
-#include "afxwin.h"
-#include "afxcmn.h"
+
 #include "stdlib.h"
 #include <vector>
 #include <string>
@@ -25,6 +27,7 @@
 
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
+//#include "opencv2/core/utility.hpp"
 #include "camerads.h"
 
 #include "CvvImage.h"
@@ -39,22 +42,22 @@ using namespace cv;
 // CStereoVisionDlg dialog
 class CStereoVisionDlg : public CDialog
 {
-// Construction
+// 构造
 public:
-	CStereoVisionDlg(CWnd* pParent = NULL);	// standard constructor
+	CStereoVisionDlg(CWnd* pParent = NULL);	// 标准构造函数
 
-// Dialog Data
+// 对话框数据
 	enum { IDD = IDD_ROBOTVISION_DIALOG };
 
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 
-// Implementation
+// 实现
 protected:
 	HICON m_hIcon;
 
-	// Generated message map functions
+	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
@@ -63,7 +66,7 @@ protected:
 
 private:
 
-	typedef enum { STEREO_BM, STEREO_SGBM } STEREO_METHOD;
+	typedef enum { STEREO_BM, STEREO_SGBM, STEREO_VAR } STEREO_METHOD;
 	typedef enum { CALIB_LOAD_CAMERA_PARAMS, CALIB_SINGLE_CAMERA_FIRST, CALIB_STEREO_CAMERAS_DIRECTLY } CALIB_ORDER;
 	typedef enum { SHOW_ORIGINAL_FRAME, SHOW_EDGE_IMAGE, SHOW_EQUAL_HISTOGRAM, SHOW_CONVERT_COLOR } FRAME_PROCESS_METHOD;
 
@@ -121,7 +124,7 @@ private:
 	int m_nBoards;
 	int m_nDelayTime;
 	int m_nMinDisp;
-	int m_nMaxDisp;
+	int m_nNumDisp;
 	int m_nSADWinSiz;
 	int m_nTextThres;
 	int m_nDisp12MaxDiff;
@@ -133,7 +136,7 @@ private:
     int m_nViewHeight;
     int m_nViewDepth;
 	UINT m_nID_RAD;
-	BOOL m_bFullDP;
+	BOOL m_bModeHH;
 	BOOL m_bSaveFrame;
 	float m_nSquareSize;
 	double m_ObjectWidth;
@@ -174,6 +177,7 @@ private:
 	vector<CStringA> DoSelectFiles(LPCTSTR	lpszDefExt, DWORD	dwFlags, LPCTSTR	lpszFilter, LPCWSTR	lpstrTitle, LPCWSTR	lpstrInitialDir);
 	void DoUpdateStateBM(void);
 	void DoUpdateStateSGBM(int imgChannels);
+	void DoUpdateStateVAR();
 
 	CString F_InitWorkDir();
     bool F_CheckDir(const string dir, bool creatDir = false);
@@ -209,4 +213,6 @@ private:
 	afx_msg void OnCbnSelchangeCbnResolution();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnClose();
+public:
+	afx_msg void OnBnClkRad_VAR();
 };

@@ -7,18 +7,10 @@
 	功能 :	立体视觉测试程序界面实现代码
 *********************************************************************/
 
+// StereoVisionDlg.cpp : 实现文件
+//
+
 #include "stdafx.h"
-
-/***
- *	检测内存泄漏
- */
-#ifdef _DEBUG
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#endif
-//////////////////////////////////////////////////////////////////////////
-
 #include "StereoVision.h"
 #include "StereoVisionDlg.h"
 
@@ -83,7 +75,7 @@ CStereoVisionDlg::CStereoVisionDlg(CWnd* pParent /*=NULL*/)
 	, m_pCheck(NULL)
 	, m_nID_RAD(0)
 	, m_nMinDisp(0)
-	, m_nMaxDisp(0)
+	, m_nNumDisp(0)
 	, m_nSADWinSiz(0)
 	, m_nTextThres(0)
 	, m_nDisp12MaxDiff(-1)
@@ -95,7 +87,7 @@ CStereoVisionDlg::CStereoVisionDlg(CWnd* pParent /*=NULL*/)
     , m_nViewHeight(0)
     , m_nViewDepth(0)
 	, m_nDelayTime(0)
-	, m_bFullDP(FALSE)
+	, m_bModeHH(FALSE)
 	, m_bSaveFrame(FALSE)
     , m_dAlpha(0)
 {
@@ -110,8 +102,8 @@ void CStereoVisionDlg::DoDataExchange(CDataExchange* pDX)
     DDV_MinMaxInt(pDX, m_nCornerSize_X, 0, 50);
     DDV_MinMaxInt(pDX, m_nCornerSize_Y, 0, 50);
     DDV_MinMaxInt(pDX, m_nBoards, 0, 100);
-    DDV_MinMaxInt(pDX, m_nMinDisp, -64, 16);
-    DDV_MinMaxInt(pDX, m_nMaxDisp, 0, 240);
+    DDV_MinMaxInt(pDX, m_nMinDisp, -128, 16);
+    DDV_MinMaxInt(pDX, m_nNumDisp, 0, 256);
     DDV_MinMaxInt(pDX, m_nSADWinSiz, 0, 21);
     DDV_MinMaxInt(pDX, m_nTextThres, 0, 50);
     DDV_MinMaxInt(pDX, m_nDisp12MaxDiff, -1, 16);
@@ -136,7 +128,7 @@ void CStereoVisionDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_SPIN_speckRange, m_spinSpeckRange);
     DDX_Control(pDX, IDC_SPIN_speckWinSiz, m_spinSpeckWinSiz);
     DDX_Control(pDX, IDC_CBN_Resolution, m_CBNResolution);
-    DDX_Check(pDX, IDC_CHK_fullDP, m_bFullDP);
+    DDX_Check(pDX, IDC_CHK_ModeHH, m_bModeHH);
     DDX_Check(pDX, IDC_CHK_SaveAsVideo, m_bSaveFrame);
     DDX_Text(pDX, IDC_EDIT_DelayTime, m_nDelayTime);
     DDX_Text(pDX, IDC_EDIT_speckWinSiz, m_nSpeckWinSiz);
@@ -152,7 +144,7 @@ void CStereoVisionDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Text(pDX, IDC_SquareSize, m_nSquareSize);
     DDX_Text(pDX, IDC_EDIT_minDisp, m_nMinDisp);
     DDX_Text(pDX, IDC_nBoards, m_nBoards);
-    DDX_Text(pDX, IDC_EDIT_maxDisp, m_nMaxDisp);
+    DDX_Text(pDX, IDC_EDIT_maxDisp, m_nNumDisp);
     DDX_Text(pDX, IDC_EDIT_SADWinSiz, m_nSADWinSiz);
     DDX_Text(pDX, IDC_EDIT_textThres, m_nTextThres);
     DDX_Text(pDX, IDC_EDIT_disp12MaxDiff, m_nDisp12MaxDiff);
@@ -177,6 +169,7 @@ BEGIN_MESSAGE_MAP(CStereoVisionDlg, CDialog)
 	ON_BN_CLICKED(IDC_BN2StopCam, &CStereoVisionDlg::OnBnClkStopCam)
 	ON_BN_CLICKED(IDC_RAD_BM, &CStereoVisionDlg::OnBnClkRad_BM)
 	ON_BN_CLICKED(IDC_RAD_SGBM, &CStereoVisionDlg::OnBnClkRad_SGBM)
+	ON_BN_CLICKED(IDC_RAD_VAR, &CStereoVisionDlg::OnBnClkRad_VAR)
 	ON_BN_CLICKED(IDC_BN_CompDisp, &CStereoVisionDlg::OnBnClk_DoCompDisp)
 	ON_BN_CLICKED(IDC_BN_StopDispComp, &CStereoVisionDlg::OnBnClk_StopDispComp)
 	ON_BN_CLICKED(IDC_BN2StereoCalib, &CStereoVisionDlg::OnBnClk_DoCameraCalib)
@@ -198,7 +191,7 @@ BEGIN_MESSAGE_MAP(CStereoVisionDlg, CDialog)
 END_MESSAGE_MAP()
 
 
-// CStereoVisionDlg message handlers
+// CStereoVisionDlg 消息处理程序
 
 /*----------------------------
  * 功能 : 初始化对话框
@@ -246,10 +239,11 @@ BOOL CStereoVisionDlg::OnInitDialog()
 	m_ProcMethod = SHOW_ORIGINAL_FRAME;
 
 	// 获取摄像头数目
+	
 	m_nCamCount = CCameraDS::CameraCount();
 	if( m_nCamCount < 1 )
 	{
-		AfxMessageBox(_T("请插入至少1个摄像头！"));
+		AfxMessageBox(_T("请插入至少1个摄像头，然后重启程序！"));
 		//return -1;
 	}
 
@@ -304,7 +298,7 @@ BOOL CStereoVisionDlg::OnInitDialog()
     m_nViewWidth = 200;
     m_nViewHeight = 200;
     m_nViewDepth = 200;
-	m_nMaxDisp = 0;
+	m_nNumDisp = 0;
 	m_nSADWinSiz =0;
 	m_nPreFiltCap =0;
 	m_nSpeckRange = 0;
@@ -336,6 +330,9 @@ BOOL CStereoVisionDlg::OnInitDialog()
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
+// 如果向对话框添加最小化按钮，则需要下面的代码
+//  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
+//  这将由框架自动完成。
 
 /*----------------------------
  * 功能 : OnSysCommand
@@ -377,11 +374,11 @@ void CStereoVisionDlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // device context for painting
+		CPaintDC dc(this); // 用于绘制的设备上下文
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Center icon in client rectangle
+		// 使图标在工作区矩形中居中
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -389,7 +386,7 @@ void CStereoVisionDlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// Draw the icon
+		// 绘制图标
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -405,17 +402,8 @@ void CStereoVisionDlg::OnPaint()
 	}
 }
 
-
-// The system calls this function to obtain the cursor to display while the user drags
-//  the minimized window.
-/*----------------------------
- * 功能 : OnQueryDragIcon
- *----------------------------
- * 函数 : CStereoVisionDlg::OnQueryDragIcon
- * 访问 : protected 
- * 返回 : HCURSOR
- *
- */
+//当用户拖动最小化窗口时系统调用此函数取得光标
+//显示。
 HCURSOR CStereoVisionDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -931,7 +919,7 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 				}
 
 				img0_file = img0Files[ 0 ];
-				img0 = cvLoadImage(img0_file);
+				img0 = cv::imread(img0_file);
 				imageSize = img0.size();
 
 				if (false == img1Files.empty())
@@ -983,11 +971,11 @@ void CStereoVisionDlg::OnBnClk_DoCameraCalib()
 				if(optCalib.readLocalImage)	// 从本地图片
 				{
 					img0_file = img0Files[ nFoundBoard ];
-					frame0 = cvLoadImage(img0_file);
+					frame0 = cv::imread(img0_file);
 					if (optCalib.doStereoCalib)
 					{
 						img1_file = img1Files[ nFoundBoard ];
-						frame1 = cvLoadImage(img1_file);
+						frame1 = cv::imread(img1_file);
 					}
 				} 
 				else	// 从摄像头
@@ -1289,7 +1277,7 @@ bool CStereoVisionDlg::DoParseOptionsOfStereoMatch(OptionStereoMatch& opt)
     if (!res)
         return false;
 
-    if (m_nMaxDisp==0)
+    if (m_nNumDisp==0)
     {
         AfxMessageBox(_T("请先输入匹配算法参数"));
         return false;
@@ -1298,7 +1286,8 @@ bool CStereoVisionDlg::DoParseOptionsOfStereoMatch(OptionStereoMatch& opt)
 	// 确认计算视差的算法
 	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_SGBM);
 	opt.stereoMethod = m_nID_RAD == IDC_RAD_BM ? STEREO_BM :
-		m_nID_RAD == IDC_RAD_SGBM ? STEREO_SGBM : STEREO_BM;
+		m_nID_RAD == IDC_RAD_SGBM ? STEREO_SGBM : 
+		m_nID_RAD == IDC_RAD_VAR ? STEREO_VAR : STEREO_BM;
 	// 确认左右视图的来源（摄像头 or 本地图片）
 	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_DispFromCam, IDC_RAD_DispFromImg);
 	opt.readLocalImage = m_nID_RAD == IDC_RAD_DispFromImg;
@@ -1336,9 +1325,9 @@ void CStereoVisionDlg::DoUpdateStateBM()
 {
 	UpdateData(TRUE);
 	m_stereoMatcher.m_BM.state->preFilterCap = m_nPreFiltCap;
-	m_stereoMatcher.m_BM.state->SADWindowSize = m_nSADWinSiz;
+	m_stereoMatcher.m_BM.state->SADWindowSize = m_nSADWinSiz > 0 ? m_nSADWinSiz : 9;
 	m_stereoMatcher.m_BM.state->minDisparity = m_nMinDisp;
-	m_stereoMatcher.m_BM.state->numberOfDisparities = m_nMaxDisp;
+	m_stereoMatcher.m_BM.state->numberOfDisparities = m_nNumDisp;
 	m_stereoMatcher.m_BM.state->textureThreshold = m_nTextThres;
 	m_stereoMatcher.m_BM.state->uniquenessRatio = m_nUniqRatio;
 	m_stereoMatcher.m_BM.state->speckleWindowSize = m_nSpeckWinSiz;
@@ -1360,15 +1349,31 @@ void CStereoVisionDlg::DoUpdateStateSGBM(int imgChannels)
 {
 	UpdateData(TRUE);
 	m_stereoMatcher.m_SGBM.preFilterCap = m_nPreFiltCap;
-	m_stereoMatcher.m_SGBM.SADWindowSize = m_nSADWinSiz;
-	m_stereoMatcher.m_SGBM.P1 =  8 * imgChannels * m_nSADWinSiz * m_nSADWinSiz;
-	m_stereoMatcher.m_SGBM.P2 = 32 * imgChannels * m_nSADWinSiz * m_nSADWinSiz;
+	m_stereoMatcher.m_SGBM.SADWindowSize = m_nSADWinSiz > 0 ? m_nSADWinSiz : 3;
+	m_stereoMatcher.m_SGBM.P1 = 8 * imgChannels * m_nSADWinSiz * m_nSADWinSiz ;
+	m_stereoMatcher.m_SGBM.P2 = 32 * imgChannels * m_nSADWinSiz * m_nSADWinSiz ;
 	m_stereoMatcher.m_SGBM.minDisparity = m_nMinDisp;
-	m_stereoMatcher.m_SGBM.numberOfDisparities = m_nMaxDisp;
+	m_stereoMatcher.m_SGBM.numberOfDisparities = m_nNumDisp;
 	m_stereoMatcher.m_SGBM.uniquenessRatio = m_nUniqRatio;
 	m_stereoMatcher.m_SGBM.speckleWindowSize = m_nSpeckWinSiz;
-	m_stereoMatcher.m_SGBM.speckleRange = m_nSpeckRange;
-	m_stereoMatcher.m_SGBM.fullDP = m_bFullDP;
+	m_stereoMatcher.m_SGBM.speckleRange =m_nSpeckRange;
+	m_stereoMatcher.m_SGBM.fullDP = m_bModeHH;
+}
+
+
+/*----------------------------
+ * 功能 : 更新 BM 求解器状态参数
+ *----------------------------
+ * 函数 : CStereoVisionDlg::DoUpdateStateBM
+ * 访问 : private 
+ * 返回 : void
+ *
+ */
+void CStereoVisionDlg::DoUpdateStateVAR()
+{
+	UpdateData(TRUE);
+	m_stereoMatcher.m_VAR.minDisp = m_nMinDisp;
+	m_stereoMatcher.m_VAR.maxDisp = m_nNumDisp + m_nMinDisp;
 }
 
 
@@ -1561,6 +1566,11 @@ void CStereoVisionDlg::OnBnClk_DoCompDisp()
 				DoUpdateStateSGBM(img1.channels());
 				m_stereoMatcher.sgbmMatch(img1, img2, disp, img1p, img2p);
 			}
+			else
+			{
+				DoUpdateStateVAR();
+				m_stereoMatcher.varMatch(img1, img2, disp, img1p, img2p);
+			}
 
 			// 画出等距的若干条横线，以比对 行对准 情况
 			for( j = 0; j < img1p.rows; j += 32 )		
@@ -1736,11 +1746,11 @@ void CStereoVisionDlg::OnBnClk_StopDispComp()
 void CStereoVisionDlg::OnBnClkDefaultStereoParam()
 {
 	// TODO: Add your control notification handler code here
-	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_GC);
+	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_VAR);
 	if (m_nID_RAD == IDC_RAD_BM)
 	{
 		m_nMinDisp = 0;	
-		m_nMaxDisp = 64;
+		m_nNumDisp = 64;
 		m_nSADWinSiz = 19;
 		m_nTextThres = 10;
 		m_nDisp12MaxDiff = -1;
@@ -1752,7 +1762,7 @@ void CStereoVisionDlg::OnBnClkDefaultStereoParam()
 	else if(m_nID_RAD == IDC_RAD_SGBM)
 	{
 		m_nMinDisp = 0;	
-		m_nMaxDisp = 64;
+		m_nNumDisp = 64;
 		m_nSADWinSiz = 7;
 		m_nDisp12MaxDiff = -1;
 		m_nPreFiltCap = 63;
@@ -1761,6 +1771,22 @@ void CStereoVisionDlg::OnBnClkDefaultStereoParam()
 		m_nSpeckWinSiz = 100;
 		m_pCheck = (CButton*)GetDlgItem(IDC_CHK_fullDP);
 		m_pCheck->SetCheck(0);
+	}
+	else if (m_nID_RAD == IDC_RAD_VAR)
+	{
+		m_nMinDisp = -64;
+		m_nNumDisp = 64;
+
+		m_stereoMatcher.m_VAR.levels = 3;                                 // ignored with USE_AUTO_PARAMS
+		m_stereoMatcher.m_VAR.pyrScale = 0.5;                             // ignored with USE_AUTO_PARAMS
+		m_stereoMatcher.m_VAR.nIt = 25;
+		m_stereoMatcher.m_VAR.poly_n = 3;
+		m_stereoMatcher.m_VAR.poly_sigma = 0.0;
+		m_stereoMatcher.m_VAR.fi = 15.0f;
+		m_stereoMatcher.m_VAR.lambda = 0.03f;
+		m_stereoMatcher.m_VAR.penalization = m_stereoMatcher.m_VAR.PENALIZATION_TICHONOV;   // ignored with USE_AUTO_PARAMS
+		m_stereoMatcher.m_VAR.cycle = m_stereoMatcher.m_VAR.CYCLE_V;                        // ignored with USE_AUTO_PARAMS
+		m_stereoMatcher.m_VAR.flags = m_stereoMatcher.m_VAR.USE_SMART_ID | m_stereoMatcher.m_VAR.USE_AUTO_PARAMS | m_stereoMatcher.m_VAR.USE_INITIAL_DISPARITY | m_stereoMatcher.m_VAR.USE_MEDIAN_FILTERING ;
 	}
 	UpdateData(FALSE);
 }
@@ -1796,7 +1822,7 @@ void CStereoVisionDlg::OnBnClkDefaultViewfield()
 void CStereoVisionDlg::DoClearParamsOfStereoMatch(void)
 {
 	m_nMinDisp = 0;	
-	m_nMaxDisp = 0;
+	m_nNumDisp = 0;
 	m_nSADWinSiz = 0;
 	m_nTextThres = 0;
 	m_nDisp12MaxDiff = -1;
@@ -1834,6 +1860,11 @@ void CStereoVisionDlg::OnBnClkRad_BM()
 	GetDlgItem(IDC_EDIT_speckRange)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_speckWinSiz)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CHK_fullDP)->EnableWindow(FALSE);
+	CButton* rad;
+	rad = (CButton*)GetDlgItem(IDC_RAD_VAR);
+	rad->SetCheck(FALSE);
+
+	OnBnClkDefaultStereoParam();
 }
 
 
@@ -1860,6 +1891,43 @@ void CStereoVisionDlg::OnBnClkRad_SGBM()
 	GetDlgItem(IDC_EDIT_speckRange)->EnableWindow(TRUE);
 	GetDlgItem(IDC_EDIT_speckWinSiz)->EnableWindow(TRUE);
 	GetDlgItem(IDC_CHK_fullDP)->EnableWindow(TRUE);
+	CButton* rad;
+	rad = (CButton*)GetDlgItem(IDC_RAD_VAR);
+	rad->SetCheck(FALSE);
+
+	OnBnClkDefaultStereoParam();
+}
+
+/*----------------------------
+ * 功能 : 点击选择 VAR 算法，已有参数清零，使能相关控件
+ *----------------------------
+ * 函数 : CStereoVisionDlg::OnBnClkRad_VAR
+ * 访问 : private 
+ * 返回 : void
+ *
+ */
+void CStereoVisionDlg::OnBnClkRad_VAR()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	DoClearParamsOfStereoMatch();
+	m_spinPreFiltCap.SetRange(0, 100);
+	GetDlgItem(IDC_EDIT_minDisp)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDIT_maxDisp)->EnableWindow(TRUE);
+	GetDlgItem(IDC_EDIT_SADWinSiz)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_textThres)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_disp12MaxDiff)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_preFiltCap)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_uniqRatio)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_speckRange)->EnableWindow(FALSE);
+	GetDlgItem(IDC_EDIT_speckWinSiz)->EnableWindow(FALSE);
+	GetDlgItem(IDC_CHK_fullDP)->EnableWindow(FALSE);
+	CButton* rad;
+	rad = (CButton*)GetDlgItem(IDC_RAD_BM);
+	rad->SetCheck(FALSE);
+	rad = (CButton*)GetDlgItem(IDC_RAD_SGBM);
+	rad->SetCheck(FALSE);
+
+	OnBnClkDefaultStereoParam();
 }
 
 
@@ -1881,11 +1949,11 @@ void CStereoVisionDlg::OnDeltaposSpin_MaxDisp(NMHDR *pNMHDR, LRESULT *pResult)
 
 	UpdateData(TRUE);
 
-	m_nMaxDisp += (int)pNMUpDown->iDelta * 16;
-	if(m_nMaxDisp<16) 
-		m_nMaxDisp = 16;
-	if(m_nMaxDisp>240)
-		m_nMaxDisp = 240;
+	m_nNumDisp += (int)pNMUpDown->iDelta * 16;
+	if(m_nNumDisp < 16) 
+		m_nNumDisp = 16;
+	if(m_nNumDisp > 256)
+		m_nNumDisp = 256;
 
 	UpdateData(FALSE);
 }
@@ -1907,7 +1975,7 @@ void CStereoVisionDlg::OnDeltaposSpin_SADWinSiz(NMHDR *pNMHDR, LRESULT *pResult)
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
 
-	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_GC);
+	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_VAR);
 	if (m_nID_RAD == IDC_RAD_BM)
 	{
 		UpdateData(TRUE);
@@ -1950,7 +2018,7 @@ void CStereoVisionDlg::OnDeltaposSpin_SpeckRange(NMHDR *pNMHDR, LRESULT *pResult
 	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
 	// TODO: Add your control notification handler code here
 	*pResult = 0;
-	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_GC);
+	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_VAR);
 	if (m_nID_RAD == IDC_RAD_BM)
 	{
 		UpdateData(TRUE);
@@ -2384,4 +2452,5 @@ void CStereoVisionDlg::OnClose()
 
     CDialog::OnClose();
 }
+
 
