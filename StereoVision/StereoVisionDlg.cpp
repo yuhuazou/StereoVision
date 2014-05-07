@@ -535,13 +535,12 @@ void CStereoVisionDlg::OnBnClkRunCam()
 		}
 		riCam.set(CV_CAP_PROP_FRAME_WIDTH,  m_nImageWidth);
 		riCam.set(CV_CAP_PROP_FRAME_HEIGHT, m_nImageHeight);
-
-		GetDlgItem( IDC_BN_CompDisp )->EnableWindow( TRUE );
 	}
 	
 	// 使部分按钮生效
 	GetDlgItem( IDC_BN2StopCam )->EnableWindow( TRUE );
 	GetDlgItem( IDC_BN2StereoCalib)->EnableWindow( TRUE );
+	GetDlgItem( IDC_BN_CompDisp )->EnableWindow( TRUE );
 	// 使部分按钮失效
 	GetDlgItem( IDC_BN1RunCam )->EnableWindow( FALSE );
     GetDlgItem( IDC_CBN1CamList_L )->EnableWindow( FALSE );
@@ -1284,13 +1283,18 @@ bool CStereoVisionDlg::DoParseOptionsOfStereoMatch(OptionStereoMatch& opt)
     }
 
 	// 确认计算视差的算法
-	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_SGBM);
+	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_BM, IDC_RAD_VAR);
 	opt.stereoMethod = m_nID_RAD == IDC_RAD_BM ? STEREO_BM :
 		m_nID_RAD == IDC_RAD_SGBM ? STEREO_SGBM : 
 		m_nID_RAD == IDC_RAD_VAR ? STEREO_VAR : STEREO_BM;
 	// 确认左右视图的来源（摄像头 or 本地图片）
 	m_nID_RAD = GetCheckedRadioButton(IDC_RAD_DispFromCam, IDC_RAD_DispFromImg);
 	opt.readLocalImage = m_nID_RAD == IDC_RAD_DispFromImg;
+	if ( !opt.readLocalImage && m_nCamCount < 2)
+	{
+		AfxMessageBox(_T("摄像头数目小于2个，无法计算视差"));
+		return false;
+	}
 	// 确认是否执行双目校正
 	m_pCheck = (CButton*)GetDlgItem(IDC_CHK_StereoRectify);
 	opt.useStereoRectify = m_pCheck->GetCheck() > 0;
@@ -2366,6 +2370,13 @@ void CStereoVisionDlg::F_EdgeDetectCanny(Mat& src, Mat& des)
  */
 void CStereoVisionDlg::DoShowOrigFrame(void)
 {
+	// 对图像数据清零
+	m_lfImage = Scalar(0);
+	F_ShowImage( m_lfImage, m_lfImage, IDC_PicLfCam );
+
+	m_riImage = Scalar(0);
+	F_ShowImage( m_riImage, m_riImage, IDC_PicRiCam );	
+
 	m_CBNMethodList.SetCurSel(0);
 	m_ProcMethod = SHOW_ORIGINAL_FRAME;
 	SetTimer(1, 50, NULL);	// 50ms 定时显示
